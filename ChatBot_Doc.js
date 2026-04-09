@@ -69,13 +69,11 @@ function showTyping(show) {
     }
 }
 
-// Core API call to Groq (medical context)
-// احذف سطر الـ API Key القديم من هنا خالص!
-
+// Core API call to Vercel Backend
 async function fetchMedicalReply(userMessage) {
     try {
-        // بننادي على السيرفر بتاعنا إحنا مش شركة Groq مباشرة
-        const response = await fetch("http://localhost:3000/api/chat", {
+        // تم تحديث الرابط ليشير إلى خادم Vercel بدلاً من localhost
+        const response = await fetch("https://healix-ai-phi.vercel.app/api/chat", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -88,11 +86,11 @@ async function fetchMedicalReply(userMessage) {
         if (data.choices && data.choices.length > 0) {
             return data.choices[0].message.content;
         } else {
-            return "I'm sorry, I couldn't process that request.";
+            return "I'm sorry, I couldn't process that request. Please try again.";
         }
     } catch (error) {
         console.error("Frontend Error:", error);
-        return "⚠️ Server is not responding. Run 'node server.js' in terminal!";
+        return "⚠️ Connection error. Please check your internet and try again.";
     }
 }
 
