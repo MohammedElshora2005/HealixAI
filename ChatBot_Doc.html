@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Healix AI | Intelligent Medical Assistant</title>
+    <!-- Font Awesome 6 (Free) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Google Fonts: Inter + Fallback -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="ChatBot_Doc.css">
+</head>
+<body>
+
+    <div class="bg-orb-1"></div>
+    <div class="bg-orb-2"></div>
+    <div class="bg-orb-3"></div>
+    
+    <div class="app-container">
+        <div class="chat-glass-panel">
+            <!-- Header with medical badge -->
+            <div class="chat-header">
+                <div class="brand">
+                    <div class="icon-wrapper">
+                        <i class="fas fa-heartbeat"></i>
+                        <div class="pulse-dot"></div>
+                    </div>
+                    <div class="brand-text">
+                        <h2>Healix <span>AI</span></h2>
+                        <p>Intelligent Medical Assistant · 24/7</p>
+                    </div>
+                </div>
+                <div class="header-badge">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>HIPAA Ready</span>
+                </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="messages-wrapper" id="messagesWrapper">
+                <div class="messages-container" id="messagesContainer">
+                    <!-- Welcome message (system) -->
+                    <div class="message bot-message">
+                        <div class="avatar bot-avatar"><i class="fas fa-robot"></i></div>
+                        <div class="bubble bot-bubble">
+                            <span class="message-text">👋 Hello! I'm <strong>Healix</strong>, your intelligent medical assistant. I provide evidence‑based health information and symptom guidance. Please describe your symptoms or ask about medications. ⚕️</span>
+                            <span class="timestamp">just now</span>
+                        </div>
+                    </div>
+                </div>
+                <!-- Typing indicator (hidden by default) -->
+                <div class="typing-indicator" id="typingIndicator">
+                    <div class="avatar bot-avatar small-avatar"><i class="fas fa-robot"></i></div>
+                    <div class="typing-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input area with advanced controls -->
+            <div class="input-panel">
+                <div class="input-container">
+                    <button class="mic-btn" id="micBtn" aria-label="Voice input">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <input type="text" id="userInput" placeholder="Describe your symptoms or ask about medication..." autocomplete="off">
+                    <button class="send-btn" id="sendBtn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+                <div class="input-note">
+                    <i class="fas fa-lock"></i> Secure & confidential · Not for emergencies · For informational purposes only
+                </div>
+            </div>
+        </div>
+        <div class="medical-cross"></div>
+    </div>
+
+    <script src="ChatBot_Doc.js"></script>
+</body>
+</html>
