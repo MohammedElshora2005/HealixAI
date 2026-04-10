@@ -34,7 +34,7 @@ Plaintext
 Clone the repository:
 
 Bash
-git clone https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git
+git clone [https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git](https://healix-ai-phi.vercel.app/ChatBot_Doc.html)
 Install dependencies:
 Navigate to the project folder and run:
 
