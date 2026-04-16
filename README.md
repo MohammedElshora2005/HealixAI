@@ -34,7 +34,7 @@ Plaintext
 Clone the repository:
 
 Bash
-git clone [https://github.com/YOUR_USERNAME/YOUR_REPO_NAME.git](https://healix-ai-phi.vercel.app/ChatBot_Doc.html)
+git clone(https://healix-ai-phi.vercel.app/ChatBot_Doc.html)
 Install dependencies:
 Navigate to the project folder and run:
 
@@ -44,8 +44,8 @@ Configure API Key:
 Create a .env file in the root directory and add your Groq API key:
 
 Plaintext
-GROQ_API_KEY=your_actual_api_key_here
-Run the Server:
+GROQ_API_KEY= https://healix-ai-phi.vercel.app/api/chat
+Run the Server: 
 
 Bash
 node server.js
