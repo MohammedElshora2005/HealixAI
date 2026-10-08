@@ -1,6 +1,6 @@
 // ===================================================
 // HEALIX AI - MEDICAL ASSISTANT
-// Enhanced JavaScript v2.0
+// Enhanced JavaScript v3.0 (Dark Elegant)
 // ===================================================
 
 'use strict';
@@ -12,9 +12,7 @@ const CONFIG = {
     API_URL: "https://healix-ai-phi.vercel.app/api/chat",
     API_TIMEOUT_MS: 30000,
     MAX_MESSAGE_LENGTH: 2000,
-    VOICE_LANG: "en-US",
-    STORAGE_KEY: "healix_chat_history",
-    MAX_HISTORY_ITEMS: 50
+    STORAGE_KEY: "healix_chat_history"
 };
 
 // ===================================================
@@ -25,9 +23,12 @@ const DOM = {
     messagesWrapper:   document.getElementById("messagesWrapper"),
     userInput:         document.getElementById("userInput"),
     sendBtn:           document.getElementById("sendBtn"),
-    micBtn:            document.getElementById("micBtn"),
     typingIndicator:   document.getElementById("typingIndicator"),
-    chatForm:          document.getElementById("chatForm")
+    chatForm:          document.getElementById("chatForm"),
+    clearBtn:          document.getElementById("clearBtn"),
+    clearModal:        document.getElementById("clearModal"),
+    cancelClear:       document.getElementById("cancelClear"),
+    confirmClear:      document.getElementById("confirmClear")
 };
 
 // ===================================================
@@ -35,17 +36,15 @@ const DOM = {
 // ===================================================
 const STATE = {
     isSending: false,
-    isListening: false,
-    recognition: null,
     abortController: null
 };
 
 // ===================================================
-// 4) UTILITY FUNCTIONS
+// 4) UTILITIES
 // ===================================================
 
 /**
- * حماية من XSS — يهرب كل الرموز الخطيرة
+ * حماية من XSS
  */
 function escapeHtml(str) {
     if (str == null) return "";
@@ -58,43 +57,16 @@ function escapeHtml(str) {
 }
 
 /**
- * تنسيق الوقت الحالي
+ * الوقت الحالي
  */
 function getTimeString() {
     return new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-}
-
-/**
- * Debounce — يمنع تنفيذ الدالة أكثر من مرة بسرعة
- */
-function debounce(fn, delay) {
-    let timer = null;
-    return function (...args) {
-        clearTimeout(timer);
-        timer = setTimeout(() => fn.apply(this, args), delay);
-    };
-}
-
-/**
- * Throttle — يحد من تكرار التنفيذ
- */
-function throttle(fn, limit) {
-    let inThrottle = false;
-    return function (...args) {
-        if (inThrottle) return;
-        fn.apply(this, args);
-        inThrottle = true;
-        setTimeout(() => (inThrottle = false), limit);
-    };
 }
 
 // ===================================================
 // 5) UI HELPERS
 // ===================================================
 
-/**
- * التمرير لأسفل الشات
- */
 function scrollToBottom(smooth = true) {
     if (!DOM.messagesWrapper) return;
     requestAnimationFrame(() => {
@@ -111,7 +83,7 @@ function scrollToBottom(smooth = true) {
 function addMessage(text, sender, options = {}) {
     if (!DOM.messagesContainer) return;
 
-    const { isError = false, isDisclaimer = false } = options;
+    const { isDisclaimer = false } = options;
     const messageDiv = document.createElement("div");
     messageDiv.className = `message ${sender === "user" ? "user-message" : "bot-message"}`;
 
@@ -121,7 +93,7 @@ function addMessage(text, sender, options = {}) {
 
     if (sender === "user") {
         messageDiv.innerHTML = `
-            <div class="avatar user-avatar"><i class="fas fa-user-md" aria-hidden="true"></i></div>
+            <div class="avatar user-avatar"><i class="fas fa-user" aria-hidden="true"></i></div>
             <div class="bubble user-bubble">
                 <span class="message-text">${formattedText}</span>
                 <span class="timestamp">${timeString}</span>
@@ -129,7 +101,7 @@ function addMessage(text, sender, options = {}) {
         `;
     } else {
         const bubbleStyle = isDisclaimer
-            ? 'style="background:#FFF8E7;border-left:4px solid #FFB347;"'
+            ? 'style="background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.3);border-left:3px solid #f59e0b;"'
             : "";
         const avatarIcon = isDisclaimer ? "fa-exclamation-triangle" : "fa-robot";
         
@@ -144,14 +116,8 @@ function addMessage(text, sender, options = {}) {
 
     DOM.messagesContainer.appendChild(messageDiv);
     scrollToBottom();
-
-    // حفظ في localStorage
-    saveMessageToHistory({ text, sender, time: timeString });
 }
 
-/**
- * إظهار/إخفاء مؤشر الكتابة
- */
 function showTyping(show) {
     if (!DOM.typingIndicator) return;
     DOM.typingIndicator.classList.toggle("active", show);
@@ -159,18 +125,11 @@ function showTyping(show) {
     if (show) scrollToBottom();
 }
 
-/**
- * تعطيل/تفعيل عناصر الإدخال
- */
 function setInputsEnabled(enabled) {
     if (DOM.userInput) DOM.userInput.disabled = !enabled;
     if (DOM.sendBtn)   DOM.sendBtn.disabled = !enabled;
-    if (DOM.micBtn)    DOM.micBtn.disabled = !enabled;
 }
 
-/**
- * تركيز على الإدخال
- */
 function focusInput() {
     if (DOM.userInput && !DOM.userInput.disabled) {
         DOM.userInput.focus({ preventScroll: true });
@@ -178,37 +137,14 @@ function focusInput() {
 }
 
 // ===================================================
-// 6) LOCAL STORAGE (اختياري — لحفظ المحادثة)
+// 6) API COMMUNICATION
 // ===================================================
-function saveMessageToHistory(message) {
-    try {
-        const history = JSON.parse(localStorage.getItem(CONFIG.STORAGE_KEY) || "[]");
-        history.push(message);
-        // نحتفظ بآخر N رسالة فقط
-        if (history.length > CONFIG.MAX_HISTORY_ITEMS) {
-            history.splice(0, history.length - CONFIG.MAX_HISTORY_ITEMS);
-        }
-        localStorage.setItem(CONFIG.STORAGE_KEY, JSON.stringify(history));
-    } catch (e) {
-        // تجاهل الأخطاء (localStorage ممكن يكون معطل)
-    }
-}
-
-// ===================================================
-// 7) API COMMUNICATION
-// ===================================================
-
-/**
- * إرسال رسالة للـ API واستقبال الرد
- */
 async function fetchMedicalReply(userMessage) {
-    // إلغاء أي طلب سابق
     if (STATE.abortController) {
         STATE.abortController.abort();
     }
     STATE.abortController = new AbortController();
 
-    // Timeout
     const timeoutId = setTimeout(() => {
         STATE.abortController.abort();
     }, CONFIG.API_TIMEOUT_MS);
@@ -223,16 +159,14 @@ async function fetchMedicalReply(userMessage) {
 
         clearTimeout(timeoutId);
 
-        // قراءة الرد (JSON)
         let data;
         try {
             data = await response.json();
         } catch (parseError) {
-            console.error("Invalid JSON response:", parseError);
+            console.error("Invalid JSON:", parseError);
             return { error: true, text: "⚠️ The server returned an invalid response. Please try again." };
         }
 
-        // فحص حالة HTTP
         if (!response.ok) {
             console.error("API Error:", response.status, data);
             const msg = data?.error?.message
@@ -241,7 +175,6 @@ async function fetchMedicalReply(userMessage) {
             return { error: true, text: `⚠️ ${msg}` };
         }
 
-        // فحص وجود خطأ في الرد
         if (data.error) {
             console.error("Backend Error:", data.error);
             return {
@@ -250,12 +183,11 @@ async function fetchMedicalReply(userMessage) {
             };
         }
 
-        // استخراج الرد
         if (data.choices?.[0]?.message?.content) {
             return { error: false, text: data.choices[0].message.content.trim() };
         }
 
-        console.error("Unexpected response shape:", data);
+        console.error("Unexpected response:", data);
         return { error: true, text: "⚠️ Unexpected response from server. Please try again." };
 
     } catch (error) {
@@ -273,124 +205,95 @@ async function fetchMedicalReply(userMessage) {
 }
 
 // ===================================================
-// 8) SEND MESSAGE HANDLER
+// 7) SEND MESSAGE
 // ===================================================
 async function sendMessage() {
-    // منع الإرسال المتكرر
     if (STATE.isSending) return;
 
     const text = DOM.userInput?.value.trim();
     if (!text) return;
 
-    // فحص الطول
     if (text.length > CONFIG.MAX_MESSAGE_LENGTH) {
-        addMessage(`Message is too long. Max ${CONFIG.MAX_MESSAGE_LENGTH} characters.`, "bot", { isError: true });
+        addMessage(`Message is too long. Max ${CONFIG.MAX_MESSAGE_LENGTH} characters.`, "bot");
         return;
     }
 
     STATE.isSending = true;
     setInputsEnabled(false);
 
-    // إضافة رسالة المستخدم
     addMessage(text, "user");
     if (DOM.userInput) DOM.userInput.value = "";
 
-    // إظهار مؤشر الكتابة
     showTyping(true);
 
-    // جلب الرد
     const result = await fetchMedicalReply(text);
 
-    // إخفاء المؤشر
     showTyping(false);
+    addMessage(result.text, "bot");
 
-    // إضافة رد البوت
-    addMessage(result.text, "bot", { isError: result.error });
-
-    // إعادة التفعيل
     STATE.isSending = false;
     setInputsEnabled(true);
     focusInput();
 }
 
 // ===================================================
-// 9) VOICE INPUT
+// 8) CLEAR CONVERSATION
 // ===================================================
-function initVoiceInput() {
-    if (!DOM.micBtn) return;
+function openClearModal() {
+    if (!DOM.clearModal) return;
+    DOM.clearModal.classList.add("active");
+    document.body.style.overflow = "hidden";
+}
 
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+function closeClearModal() {
+    if (!DOM.clearModal) return;
+    DOM.clearModal.classList.remove("active");
+    document.body.style.overflow = "";
+}
 
-    // لو المتصفح لا يدعم
-    if (!SpeechRecognition) {
-        DOM.micBtn.style.opacity = "0.5";
-        DOM.micBtn.style.cursor = "not-allowed";
-        DOM.micBtn.title = "Voice not supported in this browser";
-        DOM.micBtn.setAttribute("aria-disabled", "true");
-        return;
+function clearConversation() {
+    if (!DOM.messagesContainer) return;
+
+    // إلغاء أي طلب جاري
+    if (STATE.abortController) {
+        STATE.abortController.abort();
+        STATE.abortController = null;
     }
 
-    const recognition = new SpeechRecognition();
-    recognition.lang = CONFIG.VOICE_LANG;
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
+    // مسح الرسائل
+    DOM.messagesContainer.innerHTML = "";
 
-    STATE.recognition = recognition;
+    // إضافة رسالة ترحيب جديدة
+    const welcomeDiv = document.createElement("div");
+    welcomeDiv.className = "message bot-message";
+    welcomeDiv.innerHTML = `
+        <div class="avatar bot-avatar" aria-hidden="true">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="bubble bot-bubble">
+            <span class="message-text">👋 Conversation cleared. How can I help you today?</span>
+            <span class="timestamp">${getTimeString()}</span>
+        </div>
+    `;
+    DOM.messagesContainer.appendChild(welcomeDiv);
 
-    // بدء الاستماع
-    DOM.micBtn.addEventListener("click", () => {
-        if (STATE.isListening || STATE.isSending || DOM.userInput?.disabled) return;
-        try {
-            recognition.start();
-        } catch (e) {
-            console.warn("Failed to start recognition:", e);
-        }
-    });
+    // إعادة تعيين حالة الإرسال
+    STATE.isSending = false;
+    setInputsEnabled(true);
+    showTyping(false);
 
-    // بدء
-    recognition.onstart = () => {
-        STATE.isListening = true;
-        DOM.micBtn.classList.add("listening");
-        DOM.micBtn.style.background = "#E0F2EF";
-        DOM.micBtn.style.color = "#008B74";
-        DOM.micBtn.innerHTML = '<i class="fas fa-microphone-slash" aria-hidden="true"></i>';
-        DOM.micBtn.setAttribute("aria-label", "Stop listening");
-    };
+    // مسح من localStorage
+    try {
+        localStorage.removeItem(CONFIG.STORAGE_KEY);
+    } catch (e) { /* ignore */ }
 
-    // نتيجة
-    recognition.onresult = (event) => {
-        const transcript = event.results?.[0]?.[0]?.transcript?.trim();
-        if (transcript && DOM.userInput) {
-            DOM.userInput.value = transcript;
-            // إرسال تلقائي بعد لحظة
-            setTimeout(() => {
-                if (!STATE.isSending) sendMessage();
-            }, 150);
-        }
-    };
-
-    // خطأ
-    recognition.onerror = (event) => {
-        console.warn("Speech recognition error:", event.error);
-        if (event.error === "not-allowed") {
-            addMessage("Microphone access denied. Please enable it in your browser settings.", "bot", { isError: true });
-        }
-    };
-
-    // نهاية (تُنفذ دائماً)
-    recognition.onend = () => {
-        STATE.isListening = false;
-        DOM.micBtn.classList.remove("listening");
-        DOM.micBtn.style.background = "";
-        DOM.micBtn.style.color = "";
-        DOM.micBtn.innerHTML = '<i class="fas fa-microphone" aria-hidden="true"></i>';
-        DOM.micBtn.setAttribute("aria-label", "Voice input");
-    };
+    closeClearModal();
+    focusInput();
+    scrollToBottom(false);
 }
 
 // ===================================================
-// 10) EMERGENCY DISCLAIMER
+// 9) EMERGENCY DISCLAIMER
 // ===================================================
 function appendEmergencyDisclaimer() {
     if (!DOM.messagesContainer) return;
@@ -399,8 +302,10 @@ function appendEmergencyDisclaimer() {
     disclaimerDiv.className = "message bot-message";
     disclaimerDiv.style.marginTop = "8px";
     disclaimerDiv.innerHTML = `
-        <div class="avatar bot-avatar"><i class="fas fa-exclamation-triangle" aria-hidden="true"></i></div>
-        <div class="bubble bot-bubble" style="background:#FFF8E7;border-left:4px solid #FFB347;">
+        <div class="avatar bot-avatar" style="background:rgba(245,158,11,0.1);color:#f59e0b;border-color:rgba(245,158,11,0.3);">
+            <i class="fas fa-exclamation-triangle" aria-hidden="true"></i>
+        </div>
+        <div class="bubble bot-bubble" style="background:rgba(245,158,11,0.06);border-color:rgba(245,158,11,0.25);">
             <span class="message-text">⚠️ <strong>Medical Disclaimer:</strong> Healix is an AI assistant, not a doctor. In case of emergency, please contact your local medical services immediately. Always consult a healthcare professional for medical advice.</span>
         </div>
     `;
@@ -409,15 +314,13 @@ function appendEmergencyDisclaimer() {
 }
 
 // ===================================================
-// 11) EVENT LISTENERS
+// 10) EVENT LISTENERS
 // ===================================================
 function attachEventListeners() {
-    // زر الإرسال
     if (DOM.sendBtn) {
         DOM.sendBtn.addEventListener("click", sendMessage);
     }
 
-    // زر الإرسال داخل الـ form (لو موجود)
     if (DOM.chatForm) {
         DOM.chatForm.addEventListener("submit", (e) => {
             e.preventDefault();
@@ -425,7 +328,6 @@ function attachEventListeners() {
         });
     }
 
-    // Enter للإرسال + Shift+Enter لسطر جديد
     if (DOM.userInput) {
         DOM.userInput.addEventListener("keydown", (e) => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -434,7 +336,6 @@ function attachEventListeners() {
             }
         });
 
-        // فحص الطول أثناء الكتابة
         DOM.userInput.addEventListener("input", () => {
             const length = DOM.userInput.value.length;
             if (length > CONFIG.MAX_MESSAGE_LENGTH) {
@@ -442,6 +343,40 @@ function attachEventListeners() {
             }
         });
     }
+
+    // Clear conversation
+    if (DOM.clearBtn) {
+        DOM.clearBtn.addEventListener("click", openClearModal);
+    }
+    if (DOM.cancelClear) {
+        DOM.cancelClear.addEventListener("click", closeClearModal);
+    }
+    if (DOM.confirmClear) {
+        DOM.confirmClear.addEventListener("click", clearConversation);
+    }
+    if (DOM.clearModal) {
+        // إغلاق عند الضغط على الخلفية
+        DOM.clearModal.addEventListener("click", (e) => {
+            if (e.target === DOM.clearModal) closeClearModal();
+        });
+    }
+
+    // اختصارات لوحة المفاتيح
+    document.addEventListener("keydown", (e) => {
+        // Ctrl/Cmd + K = تركيز على الإدخال
+        if ((e.ctrlKey || e.metaKey) && e.key === "k") {
+            e.preventDefault();
+            focusInput();
+        }
+        // Esc = إغلاق الـ modal أو إلغاء الطلب
+        if (e.key === "Escape") {
+            if (DOM.clearModal?.classList.contains("active")) {
+                closeClearModal();
+            } else if (STATE.isSending && STATE.abortController) {
+                STATE.abortController.abort();
+            }
+        }
+    });
 
     // إلغاء الطلب عند إغلاق الصفحة
     window.addEventListener("beforeunload", () => {
@@ -454,43 +389,24 @@ function attachEventListeners() {
     document.addEventListener("visibilitychange", () => {
         if (!document.hidden) focusInput();
     });
-
-    // اختصارات لوحة المفاتيح
-    document.addEventListener("keydown", (e) => {
-        // Ctrl/Cmd + K = تركيز على الإدخال
-        if ((e.ctrlKey || e.metaKey) && e.key === "k") {
-            e.preventDefault();
-            focusInput();
-        }
-        // Esc = إلغاء الطلب الحالي
-        if (e.key === "Escape" && STATE.isSending && STATE.abortController) {
-            STATE.abortController.abort();
-        }
-    });
 }
 
 // ===================================================
-// 12) INITIALIZATION
+// 11) INITIALIZATION
 // ===================================================
 function init() {
-    // فحص وجود العناصر الأساسية
     if (!DOM.messagesContainer || !DOM.userInput || !DOM.sendBtn) {
         console.error("Healix AI: Required DOM elements not found.");
         return;
     }
 
     attachEventListeners();
-    initVoiceInput();
     focusInput();
     scrollToBottom(false);
 
-    // Disclaimer بعد لحظة بسيطة
     setTimeout(appendEmergencyDisclaimer, 400);
 }
 
-// ===================================================
-// 13) BOOTSTRAP
-// ===================================================
 if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);
 } else {
