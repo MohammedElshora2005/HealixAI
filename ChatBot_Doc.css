@@ -1,107 +1,194 @@
-/* RESET & GLOBAL */
-* {
+/* ===================================================
+   HEALIX AI - MEDICAL ASSISTANT
+   Enhanced Stylesheet v2.0
+   =================================================== */
+
+/* ===================================================
+   1) RESET & GLOBAL
+   =================================================== */
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
+:root {
+    /* Color System */
+    --primary-50:  #E3F2FD;
+    --primary-100: #BBDEFB;
+    --primary-200: #90CAF9;
+    --primary-300: #64B5F6;
+    --primary-400: #42A5F5;
+    --primary-500: #1E88E5;
+    --primary-600: #1565C0;
+    --primary-700: #0D47A1;
+    --primary-800: #0D2B42;
+    
+    --success: #00e676;
+    --warning: #FFB347;
+    --warning-bg: #FFF8E7;
+    
+    --text-primary: #0D2B42;
+    --text-secondary: #1565C0;
+    --text-muted: #9AB8D9;
+    
+    --bg-gradient-start: #D4E6F1;
+    --bg-gradient-end: #BBDEF0;
+    --glass-bg: rgba(255, 255, 255, 0.96);
+    --glass-border: rgba(255, 255, 255, 0.6);
+    
+    /* Spacing */
+    --space-xs: 6px;
+    --space-sm: 10px;
+    --space-md: 16px;
+    --space-lg: 22px;
+    --space-xl: 30px;
+    
+    /* Radius */
+    --radius-sm: 8px;
+    --radius-md: 28px;
+    --radius-lg: 40px;
+    --radius-xl: 52px;
+    --radius-full: 50%;
+    
+    /* Shadows */
+    --shadow-sm: 0 4px 10px rgba(13, 71, 161, 0.15);
+    --shadow-md: 0 8px 20px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 12px 22px rgba(13, 71, 161, 0.35);
+    --shadow-xl: 0 35px 60px -20px rgba(0, 0, 0, 0.35);
+    
+    /* Transitions */
+    --transition-fast: 0.15s ease;
+    --transition-base: 0.25s ease;
+    --transition-slow: 0.35s ease;
+}
+
+html {
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    scroll-behavior: smooth;
+}
+
 body {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(145deg, #D4E6F1 0%, #BBDEF0 100%);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: linear-gradient(145deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
     min-height: 100vh;
+    min-height: 100dvh; /* dynamic viewport height للموبايل */
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 20px;
+    padding: max(20px, env(safe-area-inset-top)) 
+             max(20px, env(safe-area-inset-right)) 
+             max(20px, env(safe-area-inset-bottom)) 
+             max(20px, env(safe-area-inset-left));
     position: relative;
     overflow-x: hidden;
+    color: var(--text-primary);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-/* Vibrant background orbs - blue tones */
-.bg-orb-1 {
+/* ===================================================
+   2) BACKGROUND ORBS
+   =================================================== */
+.bg-orb-1,
+.bg-orb-2,
+.bg-orb-3 {
     position: fixed;
+    border-radius: var(--radius-full);
+    z-index: 0;
+    pointer-events: none;
+    will-change: transform;
+}
+
+.bg-orb-1 {
     width: 60vw;
     height: 60vw;
     background: radial-gradient(circle, rgba(30, 136, 229, 0.3) 0%, rgba(30, 136, 229, 0) 70%);
-    border-radius: 50%;
     top: -30vh;
     left: -20vw;
-    z-index: 0;
     animation: floatOrb 18s infinite alternate ease-in-out;
 }
 
 .bg-orb-2 {
-    position: fixed;
     width: 50vw;
     height: 50vw;
     bottom: -25vh;
     right: -15vw;
-    top: auto;
-    left: auto;
     background: radial-gradient(circle, rgba(13, 71, 161, 0.25) 0%, rgba(13, 71, 161, 0) 70%);
-    animation: floatOrb 22s infinite alternate-reverse;
+    animation: floatOrb 22s infinite alternate-reverse ease-in-out;
 }
 
 .bg-orb-3 {
-    position: fixed;
     width: 40vw;
     height: 40vw;
     bottom: 10%;
     left: -10%;
     background: radial-gradient(circle, rgba(66, 165, 245, 0.2) 0%, rgba(66, 165, 245, 0) 70%);
-    animation: floatOrb 20s infinite alternate;
-    z-index: 0;
+    animation: floatOrb 20s infinite alternate ease-in-out;
 }
 
 @keyframes floatOrb {
-    0% { transform: translate(0, 0) scale(1); }
-    100% { transform: translate(45px, 35px) scale(1.12); }
+    0%   { transform: translate3d(0, 0, 0) scale(1); }
+    100% { transform: translate3d(45px, 35px, 0) scale(1.12); }
 }
 
-/* main container */
+/* ===================================================
+   3) MAIN CONTAINER
+   =================================================== */
 .app-container {
     width: 100%;
     max-width: 900px;
     height: 85vh;
+    height: 85dvh;
     min-height: 620px;
     z-index: 10;
     position: relative;
 }
 
-/* glass panel with blue accents */
 .chat-glass-panel {
-    background: rgba(255, 255, 255, 0.96);
+    background: var(--glass-bg);
     backdrop-filter: blur(24px);
-    border-radius: 52px;
-    box-shadow: 0 35px 60px -20px rgba(0, 0, 0, 0.35), 0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+    -webkit-backdrop-filter: blur(24px);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-xl), 0 0 0 1px var(--glass-border) inset;
     display: flex;
     flex-direction: column;
     height: 100%;
     overflow: hidden;
-    transition: all 0.3s ease;
+    transition: box-shadow var(--transition-base);
 }
 
-/* header styling - deep blue */
+/* ===================================================
+   4) HEADER
+   =================================================== */
 .chat-header {
-    padding: 22px 30px;
+    padding: var(--space-lg) var(--space-xl);
     background: rgba(255, 255, 255, 0.75);
     border-bottom: 2px solid rgba(30, 136, 229, 0.5);
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
+    gap: var(--space-sm);
     backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    flex-shrink: 0;
 }
 
 .brand {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: var(--space-md);
 }
 
 .icon-wrapper {
     position: relative;
-    background: linear-gradient(145deg, #1E88E5, #0D47A1);
+    background: linear-gradient(145deg, var(--primary-500), var(--primary-700));
     width: 56px;
     height: 56px;
     border-radius: 32px;
@@ -111,11 +198,12 @@ body {
     color: white;
     font-size: 1.9rem;
     box-shadow: 0 14px 26px rgba(13, 71, 161, 0.45);
-    animation: subtleGlow 2s infinite alternate;
+    animation: subtleGlow 2s infinite alternate ease-in-out;
+    flex-shrink: 0;
 }
 
 @keyframes subtleGlow {
-    0% { box-shadow: 0 14px 26px rgba(13, 71, 161, 0.3); }
+    0%   { box-shadow: 0 14px 26px rgba(13, 71, 161, 0.3); }
     100% { box-shadow: 0 18px 32px rgba(30, 136, 229, 0.6); }
 }
 
@@ -125,15 +213,15 @@ body {
     right: -2px;
     width: 16px;
     height: 16px;
-    background: #00e676;
-    border-radius: 50%;
+    background: var(--success);
+    border-radius: var(--radius-full);
     border: 2.5px solid white;
     animation: pulseGreen 1.6s infinite;
 }
 
 @keyframes pulseGreen {
-    0% { transform: scale(0.9); opacity: 1; }
-    70% { transform: scale(1.5); opacity: 0.5; }
+    0%   { transform: scale(0.9); opacity: 1; }
+    70%  { transform: scale(1.5); opacity: 0.5; }
     100% { transform: scale(0.9); opacity: 1; }
 }
 
@@ -145,10 +233,11 @@ body {
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
+    line-height: 1.2;
 }
 
 .brand-text h2 span {
-    background: linear-gradient(145deg, #1E88E5, #0D47A1);
+    background: linear-gradient(145deg, var(--primary-500), var(--primary-700));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -157,33 +246,41 @@ body {
 
 .brand-text p {
     font-size: 0.75rem;
-    color: #1565C0;
+    color: var(--text-secondary);
     letter-spacing: 0.4px;
     font-weight: 600;
+    margin-top: 2px;
 }
 
 .header-badge {
     background: linear-gradient(115deg, rgba(30, 136, 229, 0.2), rgba(13, 71, 161, 0.15));
     padding: 8px 18px;
-    border-radius: 40px;
+    border-radius: var(--radius-lg);
     font-size: 0.78rem;
     font-weight: 700;
-    color: #0D47A1;
+    color: var(--primary-700);
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: var(--space-sm);
     backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
     border: 1px solid rgba(30, 136, 229, 0.5);
+    white-space: nowrap;
 }
 
-/* messages area */
+/* ===================================================
+   5) MESSAGES AREA
+   =================================================== */
 .messages-wrapper {
     flex: 1;
     overflow-y: auto;
-    padding: 22px 28px;
+    overflow-x: hidden;
+    padding: var(--space-lg) 28px;
     display: flex;
     flex-direction: column;
     scroll-behavior: smooth;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
 }
 
 .messages-wrapper::-webkit-scrollbar {
@@ -196,27 +293,41 @@ body {
 }
 
 .messages-wrapper::-webkit-scrollbar-thumb {
-    background: #1E88E5;
+    background: var(--primary-500);
     border-radius: 10px;
+    transition: background var(--transition-fast);
+}
+
+.messages-wrapper::-webkit-scrollbar-thumb:hover {
+    background: var(--primary-700);
+}
+
+/* Firefox scrollbar */
+.messages-wrapper {
+    scrollbar-width: thin;
+    scrollbar-color: var(--primary-500) #eef5fa;
 }
 
 .messages-container {
     display: flex;
     flex-direction: column;
-    gap: 22px;
+    gap: var(--space-lg);
 }
 
-/* message bubbles */
+/* ===================================================
+   6) MESSAGE BUBBLES
+   =================================================== */
 .message {
     display: flex;
     gap: 14px;
     align-items: flex-start;
     animation: fadeSlideUp 0.3s ease-out;
+    will-change: transform, opacity;
 }
 
 @keyframes fadeSlideUp {
-    from { opacity: 0; transform: translateY(12px); }
-    to { opacity: 1; transform: translateY(0); }
+    from { opacity: 0; transform: translate3d(0, 12px, 0); }
+    to   { opacity: 1; transform: translate3d(0, 0, 0); }
 }
 
 .user-message {
@@ -226,54 +337,68 @@ body {
 .avatar {
     width: 44px;
     height: 44px;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.25rem;
     flex-shrink: 0;
+    transition: transform var(--transition-fast);
+}
+
+.avatar:hover {
+    transform: scale(1.05);
+}
+
+.small-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 1rem;
 }
 
 .user-avatar {
-    background: linear-gradient(145deg, #1E88E5, #0D47A1);
+    background: linear-gradient(145deg, var(--primary-500), var(--primary-700));
     color: white;
-    box-shadow: 0 8px 18px rgba(13, 71, 161, 0.35);
+    box-shadow: var(--shadow-sm);
 }
 
 .bot-avatar {
-    background: linear-gradient(145deg, #E3F2FD, #BBDEFB);
-    color: #0D47A1;
+    background: linear-gradient(145deg, var(--primary-50), var(--primary-100));
+    color: var(--primary-700);
     box-shadow: 0 4px 10px rgba(13, 71, 161, 0.15);
 }
 
 .bubble {
     max-width: 75%;
     padding: 14px 20px;
-    border-radius: 28px;
+    border-radius: var(--radius-md);
     font-size: 0.94rem;
     line-height: 1.48;
     word-wrap: break-word;
-    transition: all 0.2s;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    transition: transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .user-bubble {
-    background: linear-gradient(135deg, #1E88E5, #0D47A1);
+    background: linear-gradient(135deg, var(--primary-500), var(--primary-700));
     color: white;
-    border-bottom-right-radius: 8px;
-    box-shadow: 0 12px 22px rgba(13, 71, 161, 0.35);
+    border-bottom-right-radius: var(--radius-sm);
+    box-shadow: var(--shadow-lg);
 }
 
 .bot-bubble {
     background: white;
-    color: #1A2E42;
-    border-bottom-left-radius: 8px;
+    color: var(--text-primary);
+    border-bottom-left-radius: var(--radius-sm);
     border: 1px solid rgba(30, 136, 229, 0.35);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--shadow-md);
 }
 
 .message-text {
     display: block;
     white-space: pre-wrap;
+    word-break: break-word;
 }
 
 .timestamp {
@@ -281,6 +406,7 @@ body {
     opacity: 0.7;
     margin-top: 6px;
     display: block;
+    font-weight: 500;
 }
 
 .user-bubble .timestamp {
@@ -288,7 +414,9 @@ body {
     color: rgba(255, 255, 255, 0.8);
 }
 
-/* typing indicator */
+/* ===================================================
+   7) TYPING INDICATOR
+   =================================================== */
 .typing-indicator {
     display: flex;
     align-items: center;
@@ -296,7 +424,7 @@ body {
     margin-top: 14px;
     opacity: 0;
     visibility: hidden;
-    transition: all 0.2s;
+    transition: opacity var(--transition-base), visibility var(--transition-base);
 }
 
 .typing-indicator.active {
@@ -307,7 +435,7 @@ body {
 .typing-dots {
     background: white;
     padding: 14px 22px;
-    border-radius: 40px;
+    border-radius: var(--radius-lg);
     display: flex;
     gap: 8px;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.04);
@@ -317,10 +445,11 @@ body {
 .typing-dots span {
     width: 9px;
     height: 9px;
-    background: #1E88E5;
-    border-radius: 50%;
+    background: var(--primary-500);
+    border-radius: var(--radius-full);
     display: inline-block;
     animation: waveTyping 1.3s infinite ease-in-out;
+    will-change: transform, opacity;
 }
 
 .typing-dots span:nth-child(1) { animation-delay: 0s; }
@@ -328,15 +457,19 @@ body {
 .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
 
 @keyframes waveTyping {
-    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-    30% { transform: translateY(-7px); opacity: 1; }
+    0%, 60%, 100% { transform: translate3d(0, 0, 0); opacity: 0.4; }
+    30%           { transform: translate3d(0, -7px, 0); opacity: 1; }
 }
 
-/* input panel - deep blue theme */
+/* ===================================================
+   8) INPUT PANEL
+   =================================================== */
 .input-panel {
     padding: 18px 28px 28px;
     background: rgba(255, 255, 255, 0.88);
     border-top: 2px solid rgba(30, 136, 229, 0.35);
+    flex-shrink: 0;
+    padding-bottom: max(28px, env(safe-area-inset-bottom));
 }
 
 .input-container {
@@ -347,11 +480,11 @@ body {
     border-radius: 80px;
     padding: 6px 6px 6px 24px;
     box-shadow: 0 10px 24px rgba(0, 0, 0, 0.05), 0 0 0 1px #CDE5F7;
-    transition: all 0.25s;
+    transition: box-shadow var(--transition-base);
 }
 
 .input-container:focus-within {
-    box-shadow: 0 16px 32px rgba(13, 71, 161, 0.2), 0 0 0 3px #1E88E5;
+    box-shadow: 0 16px 32px rgba(13, 71, 161, 0.2), 0 0 0 3px var(--primary-500);
 }
 
 .input-container input {
@@ -361,65 +494,132 @@ body {
     font-size: 0.98rem;
     background: transparent;
     outline: none;
-    font-family: 'Inter', monospace;
-    color: #0D2B42;
+    font-family: inherit;
+    color: var(--text-primary);
     font-weight: 500;
+    min-width: 0;
+    transition: color var(--transition-fast);
 }
 
 .input-container input::placeholder {
-    color: #9AB8D9;
+    color: var(--text-muted);
     font-weight: 500;
 }
 
-.mic-btn, .send-btn {
+.input-container input:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* ===================================================
+   9) BUTTONS
+   =================================================== */
+.mic-btn,
+.send-btn {
     background: transparent;
     border: none;
     width: 52px;
     height: 52px;
-    border-radius: 50%;
+    min-width: 52px;
+    border-radius: var(--radius-full);
     cursor: pointer;
-    transition: 0.25s;
+    transition: all var(--transition-base);
     font-size: 1.3rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-shrink: 0;
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    overflow: hidden;
 }
 
 .mic-btn {
-    color: #1E88E5;
+    color: var(--primary-500);
 }
 
-.mic-btn:hover {
-    background: #E3F2FD;
-    color: #0D47A1;
+.mic-btn:hover:not(:disabled) {
+    background: var(--primary-50);
+    color: var(--primary-700);
     transform: scale(1.05);
 }
 
+.mic-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
 .send-btn {
-    background: linear-gradient(145deg, #1E88E5, #0D47A1);
+    background: linear-gradient(145deg, var(--primary-500), var(--primary-700));
     color: white;
     box-shadow: 0 8px 18px rgba(13, 71, 161, 0.45);
 }
 
-.send-btn:hover {
+.send-btn:hover:not(:disabled) {
     background: linear-gradient(145deg, #1E79C4, #0B3D8F);
     transform: scale(1.05);
     box-shadow: 0 10px 22px rgba(13, 71, 161, 0.55);
 }
 
+.send-btn:active:not(:disabled) {
+    transform: scale(0.95);
+}
+
+.mic-btn:disabled,
+.send-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
+
+/* Focus visible (accessibility) */
+.mic-btn:focus-visible,
+.send-btn:focus-visible,
+.input-container input:focus-visible {
+    outline: 3px solid var(--primary-500);
+    outline-offset: 2px;
+}
+
+/* Ripple effect on buttons */
+.mic-btn::after,
+.send-btn::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle, rgba(255,255,255,0.5) 10%, transparent 70%);
+    opacity: 0;
+    transition: opacity var(--transition-fast);
+}
+
+.mic-btn:active::after,
+.send-btn:active::after {
+    opacity: 1;
+}
+
+/* ===================================================
+   10) INPUT NOTE
+   =================================================== */
 .input-note {
     text-align: center;
     font-size: 0.72rem;
     margin-top: 16px;
-    color: #1565C0;
+    color: var(--text-secondary);
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
     font-weight: 500;
+    line-height: 1.4;
+    flex-wrap: wrap;
 }
 
-/* medical cross decoration */
+.input-note i {
+    flex-shrink: 0;
+}
+
+/* ===================================================
+   11) MEDICAL CROSS DECORATION
+   =================================================== */
 .medical-cross {
     position: absolute;
     bottom: 20px;
@@ -428,30 +628,285 @@ body {
     opacity: 0.08;
     pointer-events: none;
     z-index: 0;
+    user-select: none;
 }
 
 .medical-cross::before {
     content: "⚕️";
     font-size: 120px;
+    display: block;
 }
 
-/* responsive */
-@media (max-width: 650px) {
+/* ===================================================
+   12) RESPONSIVE — Tablet (≤ 768px)
+   =================================================== */
+@media (max-width: 768px) {
     .app-container {
-        height: 92vh;
+        max-width: 100%;
     }
+    
+    .brand-text h2 {
+        font-size: 1.6rem;
+    }
+    
+    .header-badge {
+        padding: 6px 14px;
+        font-size: 0.72rem;
+    }
+}
+
+/* ===================================================
+   13) RESPONSIVE — Mobile (≤ 650px)
+   =================================================== */
+@media (max-width: 650px) {
+    body {
+        padding: 0;
+        align-items: stretch;
+    }
+    
+    .app-container {
+        height: 100vh;
+        height: 100dvh;
+        min-height: auto;
+        max-width: 100%;
+    }
+    
+    .chat-glass-panel {
+        border-radius: 0;
+        box-shadow: none;
+        border-radius: 0 0 0 0;
+    }
+    
     .bubble {
         max-width: 85%;
+        font-size: 0.92rem;
+        padding: 12px 16px;
     }
+    
     .chat-header {
-        padding: 16px 20px;
+        padding: 14px 18px;
+        border-radius: 0;
     }
+    
     .brand-text h2 {
         font-size: 1.4rem;
     }
+    
+    .brand-text p {
+        font-size: 0.68rem;
+    }
+    
     .icon-wrapper {
         width: 48px;
         height: 48px;
         font-size: 1.6rem;
+    }
+    
+    .header-badge {
+        display: none; /* نخفيها على الموبايل الصغير */
+    }
+    
+    .messages-wrapper {
+        padding: 16px 16px;
+    }
+    
+    .input-panel {
+        padding: 14px 16px 18px;
+        border-radius: 0;
+    }
+    
+    .input-container {
+        padding: 4px 4px 4px 18px;
+    }
+    
+    .input-container input {
+        padding: 14px 0;
+        font-size: 0.95rem;
+    }
+    
+    .mic-btn,
+    .send-btn {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        font-size: 1.15rem;
+    }
+    
+    .avatar {
+        width: 38px;
+        height: 38px;
+        font-size: 1.05rem;
+    }
+    
+    .input-note {
+        font-size: 0.66rem;
+        margin-top: 12px;
+    }
+    
+    .medical-cross {
+        display: none;
+    }
+}
+
+/* ===================================================
+   14) RESPONSIVE — Small Mobile (≤ 400px)
+   =================================================== */
+@media (max-width: 400px) {
+    .brand-text h2 {
+        font-size: 1.25rem;
+    }
+    
+    .brand-text p {
+        font-size: 0.62rem;
+    }
+    
+    .icon-wrapper {
+        width: 42px;
+        height: 42px;
+        font-size: 1.4rem;
+    }
+    
+    .bubble {
+        max-width: 90%;
+        font-size: 0.88rem;
+    }
+    
+    .mic-btn,
+    .send-btn {
+        width: 42px;
+        height: 42px;
+        min-width: 42px;
+        font-size: 1.05rem;
+    }
+}
+
+/* ===================================================
+   15) ACCESSIBILITY — Prefers Reduced Motion
+   =================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+    
+    .bg-orb-1,
+    .bg-orb-2,
+    .bg-orb-3 {
+        animation: none;
+    }
+    
+    .pulse-dot,
+    .icon-wrapper {
+        animation: none;
+    }
+}
+
+/* ===================================================
+   16) DARK MODE
+   =================================================== */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg-gradient-start: #0a1628;
+        --bg-gradient-end: #1a2744;
+        --glass-bg: rgba(20, 30, 50, 0.96);
+        --glass-border: rgba(80, 130, 200, 0.2);
+        --text-primary: #E3F2FD;
+        --text-secondary: #90CAF9;
+        --text-muted: #5A7BA6;
+    }
+    
+    .chat-header {
+        background: rgba(20, 30, 50, 0.75);
+        border-bottom-color: rgba(80, 130, 200, 0.4);
+    }
+    
+    .brand-text h2 {
+        background: linear-gradient(135deg, #E3F2FD, #90CAF9);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .brand-text h2 span {
+        background: linear-gradient(145deg, #64B5F6, #1E88E5);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+    
+    .bot-bubble {
+        background: #1a2744;
+        color: #E3F2FD;
+        border-color: rgba(80, 130, 200, 0.4);
+    }
+    
+    .typing-dots {
+        background: #1a2744;
+        border-color: rgba(80, 130, 200, 0.4);
+    }
+    
+    .input-panel {
+        background: rgba(20, 30, 50, 0.88);
+        border-top-color: rgba(80, 130, 200, 0.3);
+    }
+    
+    .input-container {
+        background: #0f1a2e;
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(80, 130, 200, 0.3);
+    }
+    
+    .input-container input {
+        color: #E3F2FD;
+    }
+    
+    .input-container input::placeholder {
+        color: #5A7BA6;
+    }
+    
+    .messages-wrapper::-webkit-scrollbar-track {
+        background: #0f1a2e;
+    }
+    
+    .messages-wrapper {
+        scrollbar-color: var(--primary-500) #0f1a2e;
+    }
+}
+
+/* ===================================================
+   17) PRINT STYLES
+   =================================================== */
+@media print {
+    .bg-orb-1,
+    .bg-orb-2,
+    .bg-orb-3,
+    .input-panel,
+    .medical-cross {
+        display: none;
+    }
+    
+    .chat-glass-panel {
+        box-shadow: none;
+        border: 1px solid #ccc;
+    }
+}
+
+/* ===================================================
+   18) HIGH CONTRAST MODE
+   =================================================== */
+@media (prefers-contrast: high) {
+    .bubble {
+        border-width: 2px;
+    }
+    
+    .bot-bubble {
+        border-color: var(--primary-700);
+    }
+    
+    .input-container {
+        border: 2px solid var(--primary-500);
     }
 }
